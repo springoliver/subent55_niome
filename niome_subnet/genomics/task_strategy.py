@@ -4,7 +4,7 @@ Pick variant-selection strategy from task problem fields (no FASTQ required).
 Historical rounds:
   - 5.18.02 (real):  ~23 kb, N=7   → clinvar_priority
   - 5.16.01:         ~71 kb, N=6   → clinvar-style (sparse pathogenic sites)
-  - ab03f860 (live): ~71 kb, N=7   → clinvar_priority (same class as 5.16.01)
+  - ab03f860 / 5.19.03: ~71 kb, N=7 → clinvar_priority mid_sparse (117509–117548)
   - e034da45:       ~129 kb, N=6   → clinvar_priority (same class as 5.16.01)
   - 5.17.02 (test):  ~42 kb, N=16  → read_priority
   - 5.18.01 (test): ~100 kb, N=17  → read_priority

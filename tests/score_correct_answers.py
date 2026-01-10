@@ -6,6 +6,7 @@ Requires: bwa, samtools, bcftools (Linux/WSL).
 
   python tests/score_correct_answers.py
   python tests/score_correct_answers.py --case 02
+  python tests/score_correct_answers.py --case 03
 """
 
 import argparse
@@ -128,9 +129,12 @@ def run_case(name: str) -> float:
 
 def main():
     parser = argparse.ArgumentParser()
-    parser.add_argument("--case", choices=["01", "02", "both"], default="both")
+    parser.add_argument("--case", choices=["01", "02", "03", "all"], default="all")
     args = parser.parse_args()
-    cases = ["01", "02"] if args.case == "both" else [args.case]
+    if args.case == "all":
+        cases = ["01", "02", "03"]
+    else:
+        cases = [args.case]
     scores = {c: run_case(c) for c in cases}
     print(f"\n{'='*60}\nSummary: {scores}\n{'='*60}")
 

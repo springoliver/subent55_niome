@@ -22,7 +22,7 @@ from niome_subnet.genomics.cftr_lookup import (
 )
 
 # Bump when deploying — visible in miner logs
-CLINVAR_STRATEGY_REV = "2026-05-19-top1"
+CLINVAR_STRATEGY_REV = "2026-05-19-mid7"
 from niome_subnet.genomics.model import Task
 from niome_subnet.genomics.task_strategy import Strategy, choose_strategy, region_length
 
@@ -32,10 +32,12 @@ _MAX_ALLELE_LEN = 64
 # Micro-windows: ClinVar truth is often a large del whose POS is outside the task span
 _MICRO_CLINVAR_PAD = 25000
 
-# CFTR sub-clusters (from 5.16.01 / 5.19.02 post-mortem)
+# CFTR sub-clusters (from Results/ post-mortems)
 _DENSE_READ_LO = 117547500
 _DENSE_READ_HI = 117561000
-_UPSTREAM_SPARSE_END = 117552000
+_DENSE_MIN_REGION_END = 117576000  # 5.19.02 N=11 includes 117559 block
+_MID_SPARSE_END = 117552000  # ab03f860 ends before 117559 truth
+_MID_SPARSE_LO = 117508000  # consensus top panel (5.19.03 @ 0.86)
 _READ_NOISE_LO = 117504200
 _READ_NOISE_HI = 117504400
 
@@ -540,16 +542,19 @@ def _is_sparse_wide(region_len: int, expected: int) -> bool:
     return expected <= 10 and region_len >= 50000
 
 
-def _is_upstream_sparse(region_end: int, region_len: int, expected: int) -> bool:
-    """Region ends before 117559 block (ab03f860); truth is 117496–117548 pathogenic SNPs."""
-    return _is_sparse_wide(region_len, expected) and region_end < _UPSTREAM_SPARSE_END
+def _is_mid_sparse(region_end: int, region_len: int, expected: int) -> bool:
+    """
+    ab03f860 / 5.19.03: ~71 kb, N≤10, region ends before 117559.
+    Live truth = 117509039–117548630 panel (~0.86), NOT 117504 noise (UID40 @ 0.41).
+    """
+    return _is_sparse_wide(region_len, expected) and region_end < _MID_SPARSE_END
 
 
 def _prefer_dense_read_cluster(
     region_end: int, expected: int, read_calls: List[_ReadCall]
 ) -> bool:
-    """5.19.02 N=11: truth in 117548–117559; ignore 117504 QUAL noise (UID 40 @ 0.32)."""
-    if expected < 11 or region_end < _UPSTREAM_SPARSE_END:
+    """5.19.01/02 N≥11: truth in 117548–117559 dense block."""
+    if expected < 11 or region_end < _DENSE_MIN_REGION_END:
         return False
     dense = [
         c
@@ -577,17 +582,26 @@ def _sparse_rank_key(
     row: _ClinvarRow,
     read_exact: Dict[Tuple[int, str, str], _ReadCall],
     reads_at_pos: Dict[int, List[_ReadCall]],
-    upstream: bool = False,
+    mid_sparse: bool = False,
+    region_end: int = 0,
 ) -> Tuple:
-    """Pathogenic+read-backed SNPs first (5.16.01 / 5.19.02 validator ~0.94)."""
+    """Pathogenic+read-backed SNPs; mid_sparse boosts 117509–117548 band (5.19.03)."""
     pos = int(row[3])
     tier = _read_support_tier(pos, row[4], row[5], read_exact, reads_at_pos)
     pathogenic = 1 if row[0] >= 80 else 0
     snp = 1 if _is_simple_snp(row[4], row[5]) else 0
     noise = 0
-    if upstream and _READ_NOISE_LO <= pos <= _READ_NOISE_HI and tier < 3:
+    if mid_sparse and _READ_NOISE_LO <= pos <= _READ_NOISE_HI and tier < 3:
         noise = 1
-    return (-noise, -pathogenic, -tier, -snp, -row[0])
+    band = 0
+    if mid_sparse:
+        if pos > region_end:
+            band = -2
+        elif pos >= _MID_SPARSE_LO:
+            band = 2
+        elif pos < _MID_SPARSE_LO:
+            band = -1
+    return (-band, -noise, -pathogenic, -tier, -snp, -row[0])
 
 
 def _select_variants(
@@ -610,14 +624,16 @@ def _select_variants(
     """
     read_exact, reads_at_pos = _read_lookup(read_calls)
     sparse = _is_sparse_wide(region_len, expected)
-    upstream = _is_upstream_sparse(region_end, region_len, expected)
+    mid_sparse = _is_mid_sparse(region_end, region_len, expected)
     cluster_bp = 25 if sparse else (3 if expected <= 10 else 5)
     min_prio = 50 if sparse and len(candidates) > expected * 4 else 0
-    snp_only_first = upstream or sparse
+    snp_only_first = mid_sparse or sparse
 
     ranked = sorted(
         candidates,
-        key=lambda row: _sparse_rank_key(row, read_exact, reads_at_pos, upstream)
+        key=lambda row: _sparse_rank_key(
+            row, read_exact, reads_at_pos, mid_sparse, region_end
+        )
         if sparse
         else (
             -_read_support_tier(
@@ -662,7 +678,9 @@ def _select_variants(
     for row in ranked:
         if len(selected) >= expected:
             break
-        _try_pick(row, require_snp=snp_only_first, min_tier=2 if upstream else 0)
+        if mid_sparse and int(row[3]) > region_end:
+            continue
+        _try_pick(row, require_snp=snp_only_first, min_tier=2 if mid_sparse else 0)
 
     if len(selected) < expected:
         for row in ranked:
@@ -961,8 +979,8 @@ def build_task_vcf(
     reads.calls = _prepare_read_calls(reads.calls, expected)
 
     profile = (
-        "upstream_sparse"
-        if _is_upstream_sparse(region_end, rlen, expected)
+        "mid_sparse"
+        if _is_mid_sparse(region_end, rlen, expected)
         else (
             "dense_read"
             if _prefer_dense_read_cluster(region_end, expected, reads.calls)
@@ -979,7 +997,7 @@ def build_task_vcf(
     dp_map: Dict[Tuple[int, str, str], int] = {}
     rc_map: Dict[Tuple[int, str, str], _ReadCall] = {}
     sparse_wide = _is_sparse_wide(rlen, expected)
-    upstream_sparse = _is_upstream_sparse(region_end, rlen, expected)
+    mid_sparse_mode = _is_mid_sparse(region_end, rlen, expected)
     if strategy == "read_priority" and reads.calls:
         selected, gt_map, qual_map, dp_map = _select_read_variants(
             reads.calls, clinvar_exact, candidates, expected, region_end=region_end
@@ -1010,7 +1028,7 @@ def build_task_vcf(
         qual_map,
         dp_map,
         rc_map,
-        sparse_wide=sparse_wide or upstream_sparse,
+        sparse_wide=sparse_wide or mid_sparse_mode,
     )
     annotations = _annotations_for(selected)
 

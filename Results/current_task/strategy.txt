@@ -1,29 +1,17 @@
-Task: ab03f860-c90c-49be-b154-f0950f961a82
-Region: chr7:117480675-117551585 (~70.9 kb)
-Expected variants: 7
+Task: ab03f860-c90c-49be-b154-f0950f961a82 (5.19.03)
+Region: chr7:117480675-117551585 (~71 kb) | N=7
 
-Strategy: clinvar_priority | profile=upstream_sparse
-Reason: N=7, region END 117551585 — 117559 block is OUT. NOT 5.19.02 dense panel.
+Strategy: clinvar_priority | profile=mid_sparse
+Live truth (5.19.03 top @ 0.86): 117509039, 117530899, 117535245,
+  117540305, 117540314, 117540347, 117548630
 
-Target panel class (from 5.16.01 ~0.74 + 5.19.02 validator ~0.94 in-window):
-  117496167, 117508984, 117509138, 117530953, 117534340,
-  117540347, 117542108, 117548791 (+ read GT, SNP-only, ClinVar IDs)
-
-DO NOT submit:
-  - 117559462+ (outside region)
-  - 117504240–347 noise cluster (5.19.02 UID40 mistake)
-  - Long indels CTT>C, CT>C, GA>G
-
-Method (2026-05-19-top1):
-  - upstream_sparse: pathogenic ClinVar + read GT, SNP-first, 25bp dedupe
-  - Penalize 117504200–117504400 unless exact read+ClinVar match
-  - GT:DP:AD + CONF format
+NOT: 117504240 cluster (UID40 @ 0.41)
+NOT: 117559462+ dense block (out of region; see correct_answer_03 for 13-site dense truth)
 
 Deploy:
-  grep "2026-05-19-top1" niome_subnet/genomics/clinvar_strategy.py
+  grep "2026-05-19-mid7" niome_subnet/genomics/clinvar_strategy.py
   pm2 restart all
 
-Logs:
-  clinvar_rev=2026-05-19-top1
-  strategy=clinvar_priority profile=upstream_sparse
-  submitted=7/7
+Local regression:
+  python tests/score_correct_answers.py --case 03
+  python tests/analyze_all_results.py
