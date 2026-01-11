@@ -40,7 +40,7 @@
 ## Deploy
 
 ```bash
-grep "2026-05-19-mid7" niome_subnet/genomics/clinvar_strategy.py
+grep "2026-05-19-top1" niome_subnet/genomics/clinvar_strategy.py
 pm2 restart all
 ```
 

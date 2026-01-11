@@ -62,6 +62,14 @@ def test_ab03f860_live_sparse_n7():
     assert choose_strategy(rlen, 7) == "clinvar_priority"
 
 
+def test_b56ff3dd_compact_band():
+    region = "chr7:117490285-117527275"
+    rlen = region_length(region)
+    re = 117527275
+    assert rlen == 36990
+    assert choose_strategy(rlen, 9, region_end=re) == "read_priority"
+
+
 def test_51902_read_priority():
     region = "chr7:117494955-117576125"
     rlen = region_length(region)
@@ -83,6 +91,7 @@ if __name__ == "__main__":
     test_dfc99133_micro_single()
     test_e034da45_sparse_wide()
     test_ab03f860_live_sparse_n7()
+    test_b56ff3dd_compact_band()
     test_51902_read_priority()
     test_51801_many_variants_still_read()
     print("test_task_strategy: OK")

@@ -1,13 +1,13 @@
 {
-  "expected_variant_count": 7,
+  "expected_variant_count": 9,
   "genome_context": {
     "chromosome": "chr7",
     "gene": "CFTR",
-    "region": "chr7:117480675-117551585"
+    "region": "chr7:117490285-117527275"
   },
   "input": {
-    "read1_fastq": "https://niome-data-bucket.s3.amazonaws.com/crt/reads_1.fq?X-Amz-Algorithm=AWS4-HMAC-SHA256&X-Amz-Credential=AKIAQBOQGOVHUAS7W75G%2F20260519%2Fus-east-1%2Fs3%2Faws4_request&X-Amz-Date=20260519T155044Z&X-Amz-Expires=14400&X-Amz-SignedHeaders=host&X-Amz-Signature=d64833b0933943d3b75cf04fb68d2c4baac363fbd14072eeee49d699c36457a1",
-    "read2_fastq": "https://niome-data-bucket.s3.amazonaws.com/crt/reads_2.fq?X-Amz-Algorithm=AWS4-HMAC-SHA256&X-Amz-Credential=AKIAQBOQGOVHUAS7W75G%2F20260519%2Fus-east-1%2Fs3%2Faws4_request&X-Amz-Date=20260519T155044Z&X-Amz-Expires=14400&X-Amz-SignedHeaders=host&X-Amz-Signature=d8728a860424123c8e5dcf0d3b1a5555dce20910d9086141582f897b291b3e6b"
+    "read1_fastq": "https://niome-data-bucket.s3.amazonaws.com/crt/reads_1.fq?X-Amz-Algorithm=AWS4-HMAC-SHA256&X-Amz-Credential=AKIAQBOQGOVHUAS7W75G%2F20260519%2Fus-east-1%2Fs3%2Faws4_request&X-Amz-Date=20260519T235321Z&X-Amz-Expires=14400&X-Amz-SignedHeaders=host&X-Amz-Signature=0faa2535658f8e031763a57845870012fab5757944700faa29df96fff0e69e31",
+    "read2_fastq": "https://niome-data-bucket.s3.amazonaws.com/crt/reads_2.fq?X-Amz-Algorithm=AWS4-HMAC-SHA256&X-Amz-Credential=AKIAQBOQGOVHUAS7W75G%2F20260519%2Fus-east-1%2Fs3%2Faws4_request&X-Amz-Date=20260519T235321Z&X-Amz-Expires=14400&X-Amz-SignedHeaders=host&X-Amz-Signature=47254bcfa518c6b8554d76c490db5ddf5162d6bcd1a40c6982575af27916c62f"
   },
   "output_spec": {
     "format": "vcf",
@@ -23,7 +23,7 @@
       "SAMPLE"
     ]
   },
-  "task_id": "ab03f860-c90c-49be-b154-f0950f961a82",
+  "task_id": "b56ff3dd-2fb4-47d7-95cd-87ae331e59b9",
   "type": "cftr_variant_calling",
   "version": "2.0"
 }

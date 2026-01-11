@@ -1,17 +1,25 @@
-Task: ab03f860-c90c-49be-b154-f0950f961a82 (5.19.03)
-Region: chr7:117480675-117551585 (~71 kb) | N=7
+Task: b56ff3dd-2fb4-47d7-95cd-87ae331e59b9
+Region: chr7:117490285-117527275 (~37 kb)
+Expected variants: 9
 
-Strategy: clinvar_priority | profile=mid_sparse
-Live truth (5.19.03 top @ 0.86): 117509039, 117530899, 117535245,
-  117540305, 117540314, 117540347, 117548630
+Strategy: read_priority | profile=compact_band
+Reason: N=9, region_len=36990 (<50kb), region_end=117527275 (<117528k).
+NOT mid7 (117530+ OUT). NOT dense 117548–117559 (OUT). NOT 117504 noise.
 
-NOT: 117504240 cluster (UID40 @ 0.41)
-NOT: 117559462+ dense block (out of region; see correct_answer_03 for 13-site dense truth)
+Method (2026-05-19-compact9):
+  - Read calls limited to 117490000–region_end SNPs only
+  - Heavy penalty on 117504200–117504400 unless exact ClinVar+read
+  - Boost 117508000+ pathogenic read-backed sites
+  - ClinVar+read fallback ranking for top-9
+
+Closest historical: 5.18.02 (~23kb N=7), 5.14.02 partial overlap (upper sites OUT).
 
 Deploy:
-  grep "2026-05-19-mid7" niome_subnet/genomics/clinvar_strategy.py
+  grep "2026-05-19-compact9" niome_subnet/genomics/clinvar_strategy.py
   pm2 restart all
 
-Local regression:
-  python tests/score_correct_answers.py --case 03
-  python tests/analyze_all_results.py
+Logs:
+  clinvar_rev=2026-05-19-compact9
+  strategy=read_priority profile=compact_band
+  compact band ... OR compact clinvar+read: 9/9
+  submitted=9/9

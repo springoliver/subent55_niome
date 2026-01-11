@@ -280,7 +280,9 @@ def run_pipeline(task: Task, work_dir: str):
     region_len = region_length(task.genome_context.region)
     task_region = task.genome_context.region
     region_call = _padded_region(chrom, region_start, region_end)
-    strategy_hint = choose_strategy(region_len, task.expected_variant_count)
+    strategy_hint = choose_strategy(
+        region_len, task.expected_variant_count, region_end=region_end
+    )
     bt.logging.info(
         f"[pipeline] task={task.task_id[:8]}… clinvar_rev={CLINVAR_STRATEGY_REV} "
         f"{describe_strategy(task_region, task.expected_variant_count, strategy_hint)}"

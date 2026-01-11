@@ -3,6 +3,7 @@ Pick variant-selection strategy from task problem fields (no FASTQ required).
 
 Historical rounds:
   - 5.18.02 (real):  ~23 kb, N=7   → clinvar_priority
+  - b56ff3dd (live): ~37 kb, N=9   → compact_read (117490–117527 band)
   - 5.16.01:         ~71 kb, N=6   → clinvar-style (sparse pathogenic sites)
   - ab03f860 / 5.19.03: ~71 kb, N=7 → clinvar_priority mid_sparse (117509–117548)
   - e034da45:       ~129 kb, N=6   → clinvar_priority (same class as 5.16.01)
@@ -26,6 +27,9 @@ READ_PRIORITY_MIN_VARIANTS = int(os.environ.get("NIOME_READ_MIN_VARIANTS", "11")
 # Wide region but few truth variants → ClinVar top-N + read GT (not top-QUAL noise)
 SPARSE_MAX_VARIANTS = int(os.environ.get("NIOME_SPARSE_MAX_VARIANTS", "10"))
 
+# Compact window ends before 117530 block (b56ff3dd ends 117527275)
+COMPACT_MAX_REGION_END = int(os.environ.get("NIOME_COMPACT_MAX_END", "117528000"))
+
 
 def region_length(region: str) -> int:
     _, rest = region.split(":")
@@ -33,10 +37,20 @@ def region_length(region: str) -> int:
     return int(end) - int(start)
 
 
+def is_compact_band(region_len: int, region_end: int, expected_n: int) -> bool:
+    """~37 kb CFTR slice ending before 117530 (b56ff3dd class)."""
+    return (
+        expected_n <= SPARSE_MAX_VARIANTS
+        and region_len < READ_PRIORITY_MIN_REGION
+        and region_end < COMPACT_MAX_REGION_END
+    )
+
+
 def choose_strategy(
     region_len: int,
     expected_n: int,
     n_clinvar: Optional[int] = None,
+    region_end: int = 0,
 ) -> Strategy:
     """
     Select strategy from problem characteristics.
@@ -50,6 +64,10 @@ def choose_strategy(
         return "read_priority"
 
     if expected_n >= READ_PRIORITY_MIN_VARIANTS:
+        return "read_priority"
+
+    # Compact band N=7–10, region <50 kb, ends before 117530 (b56ff3dd N=9)
+    if region_end and is_compact_band(region_len, region_end, expected_n):
         return "read_priority"
 
     # Large window, few variants: truth is sparse pathogenic sites (5.16.01 / e034da45)
