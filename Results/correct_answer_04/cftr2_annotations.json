@@ -1,0 +1,72 @@
+{
+  "1129159": {
+    "hgvs": "NC_000007.14:g.117504249T>G",
+    "clinical_significance": "Likely benign",
+    "drug_response": {
+      "ivacaftor": "non_responsive",
+      "tezacaftor_ivacaftor": "non_responsive",
+      "elexacaftor_tezacaftor_ivacaftor": "non_responsive",
+      "lumacaftor_ivacaftor": "non_responsive"
+    }
+  },
+  "53355": {
+    "hgvs": "NC_000007.14:g.117509039G>A",
+    "clinical_significance": "Pathogenic",
+    "drug_response": {
+      "ivacaftor": "non_responsive",
+      "tezacaftor_ivacaftor": "non_responsive",
+      "elexacaftor_tezacaftor_ivacaftor": "non_responsive",
+      "lumacaftor_ivacaftor": "non_responsive"
+    }
+  },
+  "7181": {
+    "hgvs": "NC_000007.14:g.117530899G>A",
+    "clinical_significance": "Pathogenic",
+    "drug_response": {
+      "ivacaftor": "non_responsive",
+      "tezacaftor_ivacaftor": "responsive",
+      "elexacaftor_tezacaftor_ivacaftor": "responsive",
+      "lumacaftor_ivacaftor": "non_responsive"
+    }
+  },
+  "1463452": {
+    "hgvs": "NC_000007.14:g.117535245C>T",
+    "clinical_significance": "Uncertain significance",
+    "drug_response": {
+      "ivacaftor": "non_responsive",
+      "tezacaftor_ivacaftor": "non_responsive",
+      "elexacaftor_tezacaftor_ivacaftor": "non_responsive",
+      "lumacaftor_ivacaftor": "non_responsive"
+    }
+  },
+  "1787364": {
+    "hgvs": "NC_000007.14:g.117540314T>G",
+    "clinical_significance": "Uncertain significance",
+    "drug_response": {
+      "ivacaftor": "non_responsive",
+      "tezacaftor_ivacaftor": "non_responsive",
+      "elexacaftor_tezacaftor_ivacaftor": "non_responsive",
+      "lumacaftor_ivacaftor": "non_responsive"
+    }
+  },
+  "53190": {
+    "hgvs": "NC_000007.14:g.117540347G>A",
+    "clinical_significance": "Pathogenic",
+    "drug_response": {
+      "ivacaftor": "non_responsive",
+      "tezacaftor_ivacaftor": "non_responsive",
+      "elexacaftor_tezacaftor_ivacaftor": "non_responsive",
+      "lumacaftor_ivacaftor": "non_responsive"
+    }
+  },
+  "178713": {
+    "hgvs": "NC_000007.14:g.117548630T>G",
+    "clinical_significance": "Pathogenic",
+    "drug_response": {
+      "ivacaftor": "non_responsive",
+      "tezacaftor_ivacaftor": "non_responsive",
+      "elexacaftor_tezacaftor_ivacaftor": "responsive",
+      "lumacaftor_ivacaftor": "non_responsive"
+    }
+  }
+}
