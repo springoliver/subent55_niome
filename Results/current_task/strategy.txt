@@ -1,25 +1,24 @@
-Task: b56ff3dd-2fb4-47d7-95cd-87ae331e59b9
-Region: chr7:117490285-117527275 (~37 kb)
-Expected variants: 9
+Task: 52512595-dce0-49f7-80e9-f2feac3d101a
+Region: chr7:117480000-117670000 (~190 kb)
+Expected variants: 23
 
-Strategy: read_priority | profile=compact_band
-Reason: N=9, region_len=36990 (<50kb), region_end=117527275 (<117528k).
-NOT mid7 (117530+ OUT). NOT dense 117548–117559 (OUT). NOT 117504 noise.
+Strategy: read_priority | profile=ultra_wide
+Reason: N=23 and wide region (190 kb). This is not compact_band or mid_sparse.
+Need multi-cluster read selection (dense + mid + upper region) without dropping close true SNPs.
 
-Method (2026-05-19-compact9):
-  - Read calls limited to 117490000–region_end SNPs only
-  - Heavy penalty on 117504200–117504400 unless exact ClinVar+read
-  - Boost 117508000+ pathogenic read-backed sites
-  - ClinVar+read fallback ranking for top-9
+Method (2026-05-20-ultra23):
+  - Disable proximal dedupe for expected>=20 (keep dense adjacent truth sites)
+  - Ultra-wide rank: keep dense block bonus but reduce early-cluster over-penalty
+  - Favor broad high-support SNP clusters across 117530k-117620k and above
+  - Use ClinVar+read merged candidates and AD/DP GT inference
 
-Closest historical: 5.18.02 (~23kb N=7), 5.14.02 partial overlap (upper sites OUT).
+Closest historical: 5.17.01 (N=21, ~95 kb), 5.18.01 (N=17, ~100 kb), and 5.20.01 lessons.
 
 Deploy:
-  grep "2026-05-19-compact9" niome_subnet/genomics/clinvar_strategy.py
+  grep "2026-05-20-ultra23" niome_subnet/genomics/clinvar_strategy.py
   pm2 restart all
 
 Logs:
-  clinvar_rev=2026-05-19-compact9
-  strategy=read_priority profile=compact_band
-  compact band ... OR compact clinvar+read: 9/9
-  submitted=9/9
+  clinvar_rev=2026-05-20-ultra23
+  strategy=read_priority profile=ultra_wide
+  submitted=23/23

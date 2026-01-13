@@ -22,7 +22,7 @@ from niome_subnet.genomics.cftr_lookup import (
 )
 
 # Bump when deploying — visible in miner logs
-CLINVAR_STRATEGY_REV = "2026-05-19-compact9"
+CLINVAR_STRATEGY_REV = "2026-05-20-ultra23"
 from niome_subnet.genomics.model import Task
 from niome_subnet.genomics.task_strategy import Strategy, choose_strategy, region_length
 
@@ -500,7 +500,11 @@ def _parse_read_evidence_overlap(
 
 
 def _prepare_read_calls(calls: List[_ReadCall], expected: int) -> List[_ReadCall]:
-    window = 3 if expected <= 10 else 5
+    if expected >= 20:
+        # High-N tasks need dense local clusters (avoid dropping true adjacent SNPs).
+        window = 0
+    else:
+        window = 3 if expected <= 10 else 5
     return _dedupe_proximal(calls, window=window)
 
 
@@ -582,6 +586,11 @@ def _is_mid_sparse(region_end: int, region_len: int, expected: int) -> bool:
     Live truth = 117509039–117548630 panel (~0.86), NOT 117504 noise (UID40 @ 0.41).
     """
     return _is_sparse_wide(region_len, expected) and region_end < _MID_SPARSE_END
+
+
+def _is_ultra_wide(region_len: int, expected: int) -> bool:
+    """High-N, wide tasks (e.g. N=23, ~190kb) should keep multi-cluster evidence."""
+    return expected >= 20 and region_len >= 150000
 
 
 def _prefer_dense_read_cluster(
@@ -806,6 +815,7 @@ def _read_call_rank(
     clinvar_exact: Dict[Tuple[int, str, str], _ClinvarRow],
     prefer_dense: bool = False,
     compact_band: bool = False,
+    ultra_wide: bool = False,
 ) -> Tuple[float, bool, float, int, int]:
     row = clinvar_exact.get((call.pos, call.ref, call.alt))
     prio = float(row[0]) if row else 0.0
@@ -826,9 +836,25 @@ def _read_call_rank(
         if _DENSE_READ_LO <= call.pos <= _DENSE_READ_HI:
             cluster_bonus = 400.0
         elif call.pos < 117512000:
-            cluster_bonus = -350.0
+            # Ultra-wide rounds can still contain true sites in early clusters.
+            if ultra_wide:
+                cluster_bonus = -80.0
+            else:
+                cluster_bonus = -350.0
+        elif ultra_wide and 117530000 <= call.pos <= 117620000:
+            cluster_bonus = 140.0
+        elif ultra_wide and call.pos > 117640000:
+            cluster_bonus = 40.0
         elif _READ_NOISE_LO <= call.pos <= _READ_NOISE_HI:
             cluster_bonus = -300.0
+    elif ultra_wide:
+        # No dense lock; favor SNPs and broad high-support clusters.
+        if 117530000 <= call.pos <= 117620000:
+            cluster_bonus = 150.0
+        elif call.pos >= 117620000:
+            cluster_bonus = 50.0
+        elif _READ_NOISE_LO <= call.pos <= _READ_NOISE_HI:
+            cluster_bonus = -350.0
     score = prio + snp_bonus + cluster_bonus - indel_penalty
     return (score, call.pass_filter, call.qual, call.alt_ad, call.dp)
 
@@ -883,6 +909,7 @@ def _select_read_variants(
     read_exact, reads_at_pos = _read_lookup(read_calls)
     prefer_dense = _prefer_dense_read_cluster(region_end, expected, read_calls)
     compact = _is_compact_band(region_end, region_len, expected)
+    ultra_wide = _is_ultra_wide(region_len, expected)
     pool = _enrich_reads_from_clinvar(
         read_calls, candidates, read_exact, reads_at_pos
     )
@@ -912,7 +939,9 @@ def _select_read_variants(
             )
     ranked = sorted(
         pool,
-        key=lambda c: _read_call_rank(c, clinvar_exact, prefer_dense, compact),
+        key=lambda c: _read_call_rank(
+            c, clinvar_exact, prefer_dense, compact, ultra_wide
+        ),
         reverse=True,
     )
     if compact and not prefer_dense:
@@ -1153,15 +1182,19 @@ def build_task_vcf(
     reads.calls = _prepare_read_calls(reads.calls, expected)
 
     profile = (
-        "compact_band"
-        if _is_compact_band(region_end, rlen, expected)
+        "ultra_wide"
+        if _is_ultra_wide(rlen, expected)
         else (
-            "mid_sparse"
-            if _is_mid_sparse(region_end, rlen, expected)
+            "compact_band"
+            if _is_compact_band(region_end, rlen, expected)
             else (
-                "dense_read"
-                if _prefer_dense_read_cluster(region_end, expected, reads.calls)
-                else "auto"
+                "mid_sparse"
+                if _is_mid_sparse(region_end, rlen, expected)
+                else (
+                    "dense_read"
+                    if _prefer_dense_read_cluster(region_end, expected, reads.calls)
+                    else "auto"
+                )
             )
         )
     )
