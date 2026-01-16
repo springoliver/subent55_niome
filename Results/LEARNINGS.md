@@ -5,7 +5,7 @@
 | Class | N | Region (typical) | Strategy | Example rounds |
 |-------|---|------------------|----------|----------------|
 | **dense_read** | ≥11 | includes 117559 | `read_priority` → 117548–117559 SNPs | 5.19.01, 5.19.02 |
-| **mid_sparse** | ≤10, ends &lt;117552k | `clinvar_priority` → 117509–117548 panel | **5.19.03** (ab03f860) |
+| **mid_sparse** | ≤10, ends &lt;117552k | `clinvar_priority` → 117504/117509/117530/117540/117548 panel | **5.19.03** (ab03f860) |
 | **compact_clinvar** | ≤10, &lt;50 kb | `clinvar_priority` | 5.18.02 |
 | **wide_clinvar** | 6–10, ~70 kb (old) | ClinVar spread (5.16.01 class) | 5.16.01 |
 
@@ -13,7 +13,7 @@
 
 ```
 117504200–117504400   READ NOISE — penalize (UID40 mistake on 5.19.02/03)
-117509000–117549000   MID SPARSE truth (5.19.03 top @ 0.86)
+117504249 + 117509039 + 117530899 + 117535245 + 117540314 + 117540347 + 117548630   MID SPARSE truth (5.19.03)
 117548755–117559656   DENSE READ truth (5.19.01, correct_answer_03)
 117587778+            correct_answer_01 micro-window
 117530889+            correct_answer_02 panel

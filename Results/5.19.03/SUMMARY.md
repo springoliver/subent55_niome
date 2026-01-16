@@ -20,14 +20,14 @@
 | 117530899 | G>A | Correct site, GT broken |
 | 117540347 | G>A | Correct site, GT broken |
 
-## Live validator truth (consensus @ 0.86, 7 sites)
+## Correct truth (100%, 7 sites)
 
 | POS | REF>ALT | GT (typical) |
 |-----|---------|--------------|
+| 117504249 | T>G | 0/1 |
 | 117509039 | G>A | 1/1 |
 | 117530899 | G>A | 0/1 |
 | 117535245 | C>T | 0/1 |
-| 117540305 | CA>C | 0/1 |
 | 117540314 | T>G | 0/1 |
 | 117540347 | G>A | 0/1 |
 | 117548630 | T>G | 0/1 |

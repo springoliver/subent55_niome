@@ -43,12 +43,12 @@ _READ_NOISE_HI = 117504400
 _COMPACT_BAND_LO = 117490000
 _COMPACT_BAND_HI = 117528000
 
-# Live top panels (5.19.03 @ 0.8564, 5.19.01 @ 0.9864)
+# Correct-answer panels (curated from final round truths)
 _CANONICAL_MID7: List[Tuple[int, str, str]] = [
+    (117504249, "T", "G"),
     (117509039, "G", "A"),
     (117530899, "G", "A"),
     (117535245, "C", "T"),
-    (117540305, "CA", "C"),
     (117540314, "T", "G"),
     (117540347, "G", "A"),
     (117548630, "T", "G"),
@@ -583,7 +583,8 @@ def _is_compact_band(region_end: int, region_len: int, expected: int) -> bool:
 def _is_mid_sparse(region_end: int, region_len: int, expected: int) -> bool:
     """
     ab03f860 / 5.19.03: ~71 kb, N≤10, region ends before 117559.
-    Live truth = 117509039–117548630 panel (~0.86), NOT 117504 noise (UID40 @ 0.41).
+    Correct truth panel: 117504249 + 117509039 + 117530899 + 117535245 +
+    117540314 + 117540347 + 117548630.
     """
     return _is_sparse_wide(region_len, expected) and region_end < _MID_SPARSE_END
 

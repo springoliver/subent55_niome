@@ -6,7 +6,8 @@ Requires: bwa, samtools, bcftools (Linux/WSL).
 
   python tests/score_correct_answers.py
   python tests/score_correct_answers.py --case 02
-  python tests/score_correct_answers.py --case 03
+  python tests/score_correct_answers.py --case 5.19.03
+  python tests/score_correct_answers.py --case all
 """
 
 import argparse
@@ -30,6 +31,17 @@ from niome_subnet.genomics.pipeline import ensure_reference, run_pipeline
 from niome_subnet.genomics.scoring import create_mapping_file, score
 
 ROOT = os.path.join(os.path.dirname(__file__), "..", "Results")
+
+
+def _discover_cases() -> list[str]:
+    cases = []
+    for entry in sorted(os.listdir(ROOT)):
+        if not entry.startswith("correct_answer_"):
+            continue
+        base = os.path.join(ROOT, entry)
+        if os.path.isdir(base) and os.path.exists(os.path.join(base, "truth.vcf")):
+            cases.append(entry.replace("correct_answer_", ""))
+    return cases
 
 
 def load_case(name: str) -> tuple[Task, GroundTruth]:
@@ -129,11 +141,20 @@ def run_case(name: str) -> float:
 
 def main():
     parser = argparse.ArgumentParser()
-    parser.add_argument("--case", choices=["01", "02", "03", "all"], default="all")
+    discovered = _discover_cases()
+    parser.add_argument(
+        "--case",
+        default="all",
+        help=f"Case name after 'correct_answer_' (choices: {', '.join(discovered)} or all)",
+    )
     args = parser.parse_args()
     if args.case == "all":
-        cases = ["01", "02", "03"]
+        cases = discovered
     else:
+        if args.case not in discovered:
+            raise SystemExit(
+                f"Unknown case '{args.case}'. Available: {', '.join(discovered)}"
+            )
         cases = [args.case]
     scores = {c: run_case(c) for c in cases}
     print(f"\n{'='*60}\nSummary: {scores}\n{'='*60}")
