@@ -1,0 +1,10 @@
+##fileformat=VCFv4.2
+##source=pileup_intersect_clinvar
+##contig=<ID=chr7>
+#CHROM	POS	ID	REF	ALT	QUAL	FILTER	INFO
+chr7	117530889	.	C	G	100	.	.
+chr7	117530890	.	C	T	100	.	.
+chr7	117535348	.	T	G	100	.	.
+chr7	117540142	.	C	G	100	.	.
+chr7	117540157	.	C	T	100	.	.
+chr7	117540344	.	C	T	100	.	.

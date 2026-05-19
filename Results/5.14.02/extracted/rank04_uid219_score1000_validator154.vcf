@@ -1,0 +1,12 @@
+##fileformat=VCFv4.2
+##source=niome_miner
+##contig=<ID=chr7>
+##INFO=<ID=DP,Number=1,Type=Integer,Description="Depth">
+##FILTER=<ID=PASS,Description="All filters passed">
+#CHROM	POS	ID	REF	ALT	QUAL	FILTER	INFO
+chr7	117530889	.	C	G	162.99	PASS	DP=6
+chr7	117530890	.	C	T	184.99	PASS	DP=6
+chr7	117535348	.	T	G	226.94	PASS	DP=16
+chr7	117540142	.	C	G	234.53	PASS	DP=18
+chr7	117540157	.	C	T	191.86	PASS	DP=15
+chr7	117540344	.	C	T	61.69	PASS	DP=23

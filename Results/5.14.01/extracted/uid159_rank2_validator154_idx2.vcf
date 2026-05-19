@@ -1,0 +1,20 @@
+##fileformat=VCFv4.2
+##contig=<ID=chr7>
+##FILTER=<ID=PASS,Description="All filters passed">
+##niome_pipeline_status=panel_predict
+#CHROM	POS	ID	REF	ALT	QUAL	FILTER	INFO
+chr7	117530947	.	T	C	.	PASS	.
+chr7	117531080	.	T	G	.	PASS	.
+chr7	117531132	.	A	G	.	PASS	.
+chr7	117535275	.	A	C	.	PASS	.
+chr7	117535325	.	A	G	.	PASS	.
+chr7	117535369	.	C	A	.	PASS	.
+chr7	117540148	.	T	C	.	PASS	.
+chr7	117540171	.	G	C	.	PASS	.
+chr7	117540191	.	TC	T	.	PASS	.
+chr7	117559444	.	A	G	.	PASS	.
+chr7	117559481	.	G	T	.	PASS	.
+chr7	117559556	.	C	G	.	PASS	.
+chr7	117578344	.	C	G	.	PASS	.
+chr7	117578371	.	T	C	.	PASS	.
+chr7	117578521	.	G	A	.	PASS	.

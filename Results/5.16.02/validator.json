@@ -1,0 +1,22 @@
+{
+    "items": [
+        {
+            "annotation_score": 0,
+            "created_at": "2026-05-16T10:33:57.982759",
+            "f1_score": 0.8363636357175206,
+            "final_score": 0.5896853308152739,
+            "id": "5652e469-4c5d-4f1a-bb0e-c2951465c396",
+            "log": "VCF Score: 0.8424, Annotation Score: 0.0000, Final Score: 0.5897\n\nMiner VCF\n##fileformat=VCFv4.2\n##contig=<ID=chr7,length=159345973>\n##FORMAT=<ID=GT,Number=1,Type=String,Description=\"Genotype\">\n#CHROM\tPOS\tID\tREF\tALT\tQUAL\tFILTER\tINFO\tFORMAT\tSAMPLE\nchr7\t117504330\t.\tA\tG\t.\tPASS\t.\tGT\t0/1\nchr7\t117504336\t.\tC\tA\t.\tPASS\t.\tGT\t0/1\nchr7\t117504347\t.\tT\tC\t.\tPASS\t.\tGT\t0/1\nchr7\t117504353\t.\tA\tT\t.\tPASS\t.\tGT\t0/1\nchr7\t117504365\t.\tT\tA\t.\tPASS\t.\tGT\t0/1\nchr7\t117509017\t.\tT\tC\t.\tPASS\t.\tGT\t0/1\nchr7\t117530974\t.\tC\tT\t.\tPASS\t.\tGT\t1/1\nchr7\t117531076\t.\tC\tT\t.\tPASS\t.\tGT\t0/1\nchr7\t117535286\t.\tG\tT\t.\tPASS\t.\tGT\t0/1\nchr7\t117535316\t.\tG\tA\t.\tPASS\t.\tGT\t0/1\nchr7\t117535409\t.\tC\tG\t.\tPASS\t.\tGT\t0/1\nchr7\t117536678\t.\tG\tA\t.\tPASS\t.\tGT\t0/1\nchr7\t117540250\t.\tC\tT\t.\tPASS\t.\tGT\t1/1\nchr7\t117542121\t.\tA\tT\t.\tPASS\t.\tGT\t0/1\n",
+            "miner_hotkey": "5Fpn2QnG8ysrnXUpX61BNkA6fQqtNx1phXTSVmbgKCHKFF21",
+            "miner_uid": 25,
+            "precision": 0.9387755100124948,
+            "recall": 0.754098360532115,
+            "response_time": 40.89539367891848,
+            "task_id": "e32690ef-9fd1-491a-9e0c-a3d4ac4d206d",
+            "validator_hotkey": "5GKyynoDyBwc9H6WXCGsa4B4gr8wcrML8Vyo8o3ScD2DPQHV",
+            "validator_uid": 154,
+            "vcf_score": 0.8424076154503912,
+            "weight": 0.1899999976158142
+        }
+    ]
+}

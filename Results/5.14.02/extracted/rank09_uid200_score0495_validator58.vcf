@@ -1,0 +1,10 @@
+##fileformat=VCFv4.2
+##FILTER=<ID=PASS,Description="All filters passed">
+##contig=<ID=chr7,length=159345973>
+#CHROM	POS	ID	REF	ALT	QUAL	FILTER	INFO
+chr7	117530889	1629492	C	G	.	.	.
+chr7	117531124	526024	C	G	.	.	.
+chr7	117534289	1406009	C	G	.	.	.
+chr7	117535409	4818575	CA	C	.	.	.
+chr7	117540157	256258	C	T	.	.	.
+chr7	117540344	3339105	C	T	.	.	.
